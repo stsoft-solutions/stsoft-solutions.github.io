@@ -1,0 +1,16 @@
+OTLP .net debug
+
+To create a log for Opentelemetry
+
+Put file OTEL_DIAGNOSTICS.json into Working directory
+```json
+{
+    "LogDirectory": ".",
+    "FileSize": 32768,
+    "LogLevel": "Verbose"
+}
+```
+
+Logs will be created in ~ 10 seconds
+
+https://github.com/open-telemetry/opentelemetry-dotnet/blob/f3bc6a2d9aacc5964f5a04398b8269546dba81a2/src/OpenTelemetry/README.md?plain=1#L95-L96
