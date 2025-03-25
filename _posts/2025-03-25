@@ -1,4 +1,66 @@
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317 # force IP4
+      http:
+        endpoint: 0.0.0.0:4318 # force IP4
+
+exporters:
+  otlp:
+    endpoint: "jaeger:4317"  # Подключение к Jaeger через gRPC
+    tls:
+      insecure: true  # Важно! Отключаем TLS для gRPC
+
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    resource_to_telemetry_conversion:
+      enabled: true  # Переносит стандартные метки ресурса в метрики
+
+  debug:
+    verbosity: normal
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+processors:
+  batch:
+  attributes: # Хрен его знает, пока не срабатывает
+    actions:
+      - action: upsert
+        key: instance
+        from_attribute: service.instance.id
+      - action: upsert
+        key: job
+        from_attribute: service.name
+      - action: delete
+        key: exported.job
+      - action: delete
+        key: exported.instance
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      #exporters: [otlp, debug]   # Используем OTLP для отправки трасс и debug
+      exporters: [otlp]   # Используем OTLP для отправки трасс
+    metrics:
+      receivers: [otlp]
+      processors: [batch, attributes]
+      exporters: [prometheus]
+  # Debug level
+  telemetry:
+    logs:
+      level: "DEBUG"
+      development: true
+      encoding: "json"
+```
+
+
 OTLP .net debug
+
+
+
 
 To create a log for Opentelemetry
 
